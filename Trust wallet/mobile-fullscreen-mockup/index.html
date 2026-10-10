@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0A0A0F" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Trust Wallet">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Trust Wallet - محفظة آمنة</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300D4FF'/%3E%3Cpath d='M50 20a30 30 0 1 0 0 60 30 30 0 0 0 0-60zm0 10a20 20 0 1 1 0 40 20 20 0 0 1 0-40z' fill='white'/%3E%3Ccircle cx='50' cy='50' r='12' fill='%2300D4FF'/%3E%3C/svg%3E">
+  <meta name="msapplication-TileColor" content="#0A0A0F">
+  <meta name="msapplication-tap-highlight" content="no">
+  <style>
+    @font-face {
+      font-family: 'Inter';
+      src: local('Inter'), local('SF Pro Display'), local('Segoe UI'), local('Roboto');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    :root {
+      --bg: #0A0A0F;
+      --bg-deep: #050508;
+      --surface: rgba(255, 255, 255, 0.06);
+      --surface-strong: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #00D4FF;
+      --accent-dim: rgba(0, 212, 255, 0.15);
+      --text: #FFFFFF;
+      --text-dim: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --success: #10B981;
+      --error: #F43F5E;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --blur: 20px;
+      --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #F8FAFC;
+        --bg-deep: #FFFFFF;
+        --surface: rgba(15, 23, 42, 0.04);
+        --surface-strong: rgba(15, 23, 42, 0.08);
+        --border: rgba(15, 23, 42, 0.1);
+        --accent: #0099CC;
+        --accent-dim: rgba(0, 153, 204, 0.15);
+        --text: #0F172A;
+        --text-dim: rgba(15, 23, 42, 0.7);
+        --text-muted: rgba(15, 23, 42, 0.4);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-dim) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+        var(--bg);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .app {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: clamp(24px, 8vh, 48px) clamp(16px, 5vw, 32px);
+      position: relative;
+      min-height: 60dvh;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      z-index: -1;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.8; }
+    }
+
+    .logo {
+      width: clamp(56px, 12vw, 80px);
+      height: clamp(56px, 12vw, 80px);
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: clamp(16px, 4vh, 24px);
+      box-shadow:
+        0 8px 32px rgba(0, 212, 255, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+        0 1px 0 rgba(255, 255, 255, 0.2) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+    }
+
+    .logo svg {
+      width: 55%;
+      height: 55%;
+      color: white;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 7vw, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: clamp(12px, 3vh, 16px);
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: clamp(16px, 4vw, 18px);
+      color: var(--text-dim);
+      max-width: 320px;
+      line-height: 1.6;
+      margin-bottom: clamp(24px, 6vh, 32px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%);
+      color: #050508;
+      box-shadow:
+        0 4px 20px rgba(0, 212, 255, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+      box-shadow:
+        0 2px 10px rgba(0, 212, 255, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(var(--blur));
+    }
+
+    .btn-secondary:active {
+      background: var(--surface-strong);
+      transform: scale(0.97);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 0 clamp(16px, 5vw, 32px) clamp(24px, 6vh, 40px);
+      max-width: 100%;
+    }
+
+    .feature {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(16px, 4vw, 20px) clamp(12px, 3vw, 16px);
+      text-align: center;
+      backdrop-filter: blur(var(--blur));
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .feature:active::before,
+    .feature:hover::before {
+      opacity: 1;
+    }
+
+    .feature:active {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 32px rgba(0, 212, 255, 0.15);
+    }
+
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-dim);
+      border-radius: 12px;
+      color: var(--accent);
+    }
+
+    .feature-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .feature h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .feature p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      background: linear-gradient(180deg, transparent, var(--bg-deep) 60%);
+      backdrop-filter: blur(var(--blur));
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+      min-width: 60px;
+    }
+
+    .nav-item.active,
+    .nav-item:active {
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .nav-item:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-action {
+      position: fixed;
+      bottom: calc(80px + env(safe-area-inset-bottom));
+      right: clamp(16px, 5vw, 24px);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%);
+      border: none;
+      color: #050508;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 212, 255, 0.4);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all var(--transition);
+      z-index: 50;
+    }
+
+    .floating-action:active {
+      transform: scale(0.9);
+    }
+
+    .floating-action:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .floating-action svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: clamp(20px, 5vh, 32px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    .scroll-indicator svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .features {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        padding: 14px 16px;
+      }
+
+      .feature-icon {
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        flex-shrink: 0;
+      }
+
+      .feature-content {
+        flex: 1;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      .hero {
+        min-height: auto;
+        padding: clamp(16px, 5vh, 24px) clamp(16px, 5vw, 32px);
+      }
+
+      .features {
+        padding-bottom: clamp(16px, 4vh, 24px);
+      }
+    }
+
+    .install-banner {
+      position: fixed;
+      bottom: calc(80px + env(safe-area-inset-bottom));
+      left: clamp(16px, 5vw, 24px);
+      right: clamp(16px, 5vw, 24px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      backdrop-filter: blur(var(--blur));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 200;
+      animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .install-banner.hidden {
+      display: none;
+    }
+
+    .install-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .install-banner-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .install-banner-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #050508;
+    }
+
+    .install-banner-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .install-banner-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .install-banner-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .install-banner-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .install-banner-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all var(--transition);
+    }
+
+    .install-banner-btn.primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #0099CC 100%);
+      color: #050508;
+    }
+
+    .install-banner-btn.secondary {
+      background: var(--surface-strong);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .install-banner-btn:active {
+      transform: scale(0.95);
+    }
+
+    .install-banner-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .install-banner-close:active {
+      background: var(--border);
+      transform: scale(0.9);
+    }
+
+    .install-banner-close svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    @media (display-mode: standalone) {
+      .install-banner {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .install-banner {
+        left: 12px;
+        right: 12px;
+        bottom: calc(70px + env(safe-area-inset-bottom));
+        padding: 14px;
+      }
+
+      .install-banner-text {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12V7H5V7M3 12a9 9 0 0 0 18 0M12 12a3 3 0 0 1 0 6M12 12a3 3 0 0 0 0 6"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <h1>محفظة آمنة للعملات الرقمية</h1>
+      <p>احفظ، أرسل، واستقبل أصولك الرقمية بأمان تام وخصوصية مطلقة</p>
+      <a href="#" class="btn btn-primary">ابدأ الآن</a>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span>اسحب للأعلى</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </header>
+
+    <section class="features" aria-label="المميزات">
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="2"/>
+            <line x1="12" y1="6" x2="12" y2="18"/>
+            <line x1="6" y1="12" x2="18" y2="12"/>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h3>أمان متعدد الطبقات</h3>
+          <p>تشفير متقدم ومصادقة بيومترية</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h3>وصول فوري</h3>
+          <p>افتح المحفظة في ثوانٍ</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h3>خصوصية تامة</h3>
+          <p>مفاتيحك، أصولك، تحكمك</p>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <nav class="bottom-bar" aria-label="التنقل الرئيسي">
+    <a href="#" class="nav-item active" aria-current="page">
+      <span class="nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </span>
+      <span>الرئيسية</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <path d="M18 18H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2z"/>
+        </svg>
+      </span>
+      <span>المحفظة</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </span>
+      <span>التداول</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </span>
+      <span>الإعدادات</span>
+    </a>
+  </nav>
+
+  <button class="floating-action" aria-label="إجراء سريع" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+  <div class="install-banner hidden" id="installBanner" role="dialog" aria-label="تثبيت التطبيق">
+    <div class="install-banner-content">
+      <div class="install-banner-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M17 10l-5 5-5-5"/>
+        </svg>
+      </div>
+      <div class="install-banner-text">
+        <div class="install-banner-title">ثبّت Trust Wallet</div>
+        <div class="install-banner-desc">أضف إلى الشاشة الرئيسية للوصول السريع</div>
+      </div>
+    </div>
+    <div class="install-banner-actions">
+      <button class="install-banner-btn primary" id="installBtn">تثبيت</button>
+      <button class="install-banner-btn secondary" id="installLaterBtn">لاحقاً</button>
+    </div>
+    <button class="install-banner-close" id="installCloseBtn" aria-label="إغلاق">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const hero = document.querySelector('.hero');
+      const floatingAction = document.querySelector('.floating-action');
+      let ticking = false;
+
+      function onScroll() {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const scrollY = window.scrollY;
+            const heroHeight = hero.offsetHeight;
+            const progress = Math.min(scrollY / (heroHeight * 0.5), 1);
+
+            hero.style.transform = `translateY(${scrollY * 0.3}px)`;
+            hero.style.opacity = 1 - progress * 0.5;
+
+            floatingAction.style.transform = `translateY(${Math.max(0, scrollY - 100) * 0.5}px)`;
+            floatingAction.style.opacity = Math.max(0, 1 - (scrollY - 200) / 300);
+
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      let orientationTicking = false;
+      window.addEventListener('deviceorientation', (e) => {
+        if (!orientationTicking && e.beta !== null && e.gamma !== null) {
+          requestAnimationFrame(() => {
+            const tiltX = Math.max(-15, Math.min(15, e.gamma * 0.1));
+            const tiltY = Math.max(-15, Math.min(15, e.beta * 0.1));
+
+            document.querySelectorAll('.feature').forEach((card, i) => {
+              const factor = (i % 2 === 0) ? 1 : -1;
+              card.style.transform = `translate(${tiltX * factor}px, ${tiltY * factor}px)`;
+            });
+
+            orientationTicking = false;
+          });
+          orientationTicking = true;
+        }
+      });
+
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+
+      floatingAction.addEventListener('click', () => {
+        floatingAction.style.transform = 'scale(0.9) rotate(90deg)';
+        setTimeout(() => {
+          floatingAction.style.transform = '';
+        }, 150);
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          document.body.style.animationPlayState = 'paused';
+        } else {
+          document.body.style.animationPlayState = 'running';
+        }
+      });
+
+      // PWA Install Logic
+      let deferredPrompt = null;
+      const installBanner = document.getElementById('installBanner');
+      const installBtn = document.getElementById('installBtn');
+      const installLaterBtn = document.getElementById('installLaterBtn');
+      const installCloseBtn = document.getElementById('installCloseBtn');
+
+      function isInstalled() {
+        return window.matchMedia('(display-mode: standalone)').match ||
+               window.navigator.standalone === true;
+      }
+
+      function showInstallBanner() {
+        if (!isInstalled() && deferredPrompt && !localStorage.getItem('installDismissed')) {
+          installBanner.classList.remove('hidden');
+        }
+      }
+
+      function hideInstallBanner() {
+        installBanner.classList.add('hidden');
+      }
+
+      function dismissInstallBanner() {
+        localStorage.setItem('installDismissed', 'true');
+        hideInstallBanner();
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallBanner();
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
+        hideInstallBanner();
+        localStorage.setItem('installDismissed', 'true');
+        console.log('PWA installed successfully');
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            console.log('User accepted install');
+          }
+          deferredPrompt = null;
+          hideInstallBanner();
+        }
+      });
+
+      installLaterBtn.addEventListener('click', dismissInstallBanner);
+      installCloseBtn.addEventListener('click', dismissInstallBanner);
+
+      // Show banner after a delay if not installed and prompt wasn't fired
+      setTimeout(() => {
+        if (!isInstalled() && !deferredPrompt && !localStorage.getItem('installDismissed')) {
+          showInstallBanner();
+        }
+      }, 10000);
+
+      // Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered:', registration.scope);
+
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('New version available');
+                    // Could show update notification here
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log('SW registration failed:', error);
+            });
+        });
+
+        // Handle controller change (new SW activated)
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      }
+
+      // Detect iOS and show manual install instructions
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS && !window.navigator.standalone) {
+        const iosBanner = document.createElement('div');
+        iosBanner.className = 'install-banner';
+        iosBanner.innerHTML = `
+          <div class="install-banner-content">
+            <div class="install-banner-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M17 10l-5 5-5-5"/>
+              </svg>
+            </div>
+            <div class="install-banner-text">
+              <div class="install-banner-title">أضف إلى الشاشة الرئيسية</div>
+              <div class="install-banner-desc">اضغط أيقونة المشاركة ثم "إضافة للشاشة الرئيسية"</div>
+            </div>
+          </div>
+          <button class="install-banner-close" aria-label="إغلاق">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        `;
+        iosBanner.querySelector('.install-banner-close').addEventListener('click', () => {
+          iosBanner.remove();
+          localStorage.setItem('installDismissed', 'true');
+        });
+        document.body.appendChild(iosBanner);
+      }
+    })();
+  </script>
+</body>
+</html>

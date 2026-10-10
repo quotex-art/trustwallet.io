@@ -1,0 +1,41 @@
+{
+  "name": "Trust Wallet - محفظة آمنة",
+  "short_name": "Trust Wallet",
+  "description": "محفظة آمنة للعملات الرقمية - احفظ، أرسل، واستقبل أصولك بأمان تام",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A0A0F",
+  "theme_color": "#0A0A0F",
+  "scope": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["finance", "productivity", "security"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2300D4FF'/%3E%3Cpath d='M50 20a30 30 0 1 0 0 60 30 30 0 0 0 0-60zm0 10a20 20 0 1 1 0 40 20 20 0 0 1 0-40z' fill='white'/%3E%3Ccircle cx='50' cy='50' r='12' fill='%2300D4FF'/%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "إرسال",
+      "short_name": "إرسال",
+      "description": "إرسال أصول رقمية",
+      "url": "/send",
+      "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z'/%3E%3C/svg%3E", "sizes": "96x96" }]
+    },
+    {
+      "name": "استقبال",
+      "short_name": "استقبال",
+      "description": "استقبال أصول رقمية",
+      "url": "/receive",
+      "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M2 22l11-11M2 22l7-20 4 9 9 4-20 7z'/%3E%3C/svg%3E", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false,
+  "related_applications": []
+}
